@@ -20,7 +20,8 @@ fi
 echo Working dir: $DBENCH_MOUNTPOINT
 echo
 
-if [ "$1" = 'fio' ]; then
+#if [ "$1" = 'fio' ]; then
+if [ "fio" = 'fio' ]; then
 
     echo Testing Read IOPS...
     READ_IOPS=$(fio --randrepeat=0 --verify=0 --ioengine=libaio --direct=$FIO_DIRECT --gtod_reduce=1 --name=read_iops --filename=$DBENCH_MOUNTPOINT/fiotest --bs=4K --iodepth=64 --size=$FIO_SIZE --readwrite=randread --time_based --ramp_time=2s --runtime=15s)
