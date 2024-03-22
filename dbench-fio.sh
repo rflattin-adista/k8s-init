@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 set -e
+#set -x
 
 if [ -z $DBENCH_MOUNTPOINT ]; then
     DBENCH_MOUNTPOINT=/tmp
@@ -27,6 +28,7 @@ if [ "fio" = 'fio' ]; then
     READ_IOPS=$(fio --randrepeat=0 --verify=0 --ioengine=libaio --direct=$FIO_DIRECT --gtod_reduce=1 --name=read_iops --filename=$DBENCH_MOUNTPOINT/fiotest --bs=4K --iodepth=64 --size=$FIO_SIZE --readwrite=randread --time_based --ramp_time=2s --runtime=15s)
     echo "$READ_IOPS"
     READ_IOPS_VAL=$(echo "$READ_IOPS"|grep -E 'read ?:'|grep -Eoi 'IOPS=[0-9k.]+'|cut -d'=' -f2)
+    echo READ_IOPS_VAL $READ_IOPS_VAL
     echo
     echo
 
@@ -34,6 +36,7 @@ if [ "fio" = 'fio' ]; then
     WRITE_IOPS=$(fio --randrepeat=0 --verify=0 --ioengine=libaio --direct=$FIO_DIRECT --gtod_reduce=1 --name=write_iops --filename=$DBENCH_MOUNTPOINT/fiotest --bs=4K --iodepth=64 --size=$FIO_SIZE --readwrite=randwrite --time_based --ramp_time=2s --runtime=15s)
     echo "$WRITE_IOPS"
     WRITE_IOPS_VAL=$(echo "$WRITE_IOPS"|grep -E 'write:'|grep -Eoi 'IOPS=[0-9k.]+'|cut -d'=' -f2)
+    echo WRITE_IOPS_VAL $WRITE_IOPS_VAL
     echo
     echo
 
@@ -41,6 +44,7 @@ if [ "fio" = 'fio' ]; then
     READ_BW=$(fio --randrepeat=0 --verify=0 --ioengine=libaio --direct=$FIO_DIRECT --gtod_reduce=1 --name=read_bw --filename=$DBENCH_MOUNTPOINT/fiotest --bs=128K --iodepth=64 --size=$FIO_SIZE --readwrite=randread --time_based --ramp_time=2s --runtime=15s)
     echo "$READ_BW"
     READ_BW_VAL=$(echo "$READ_BW"|grep -E 'read ?:'|grep -Eoi 'BW=[0-9GMKiBs/.]+'|cut -d'=' -f2)
+    echo READ_BW_VAL $READ_BW_VAL
     echo
     echo
 
@@ -48,14 +52,15 @@ if [ "fio" = 'fio' ]; then
     WRITE_BW=$(fio --randrepeat=0 --verify=0 --ioengine=libaio --direct=$FIO_DIRECT --gtod_reduce=1 --name=write_bw --filename=$DBENCH_MOUNTPOINT/fiotest --bs=128K --iodepth=64 --size=$FIO_SIZE --readwrite=randwrite --time_based --ramp_time=2s --runtime=15s)
     echo "$WRITE_BW"
     WRITE_BW_VAL=$(echo "$WRITE_BW"|grep -E 'write:'|grep -Eoi 'BW=[0-9GMKiBs/.]+'|cut -d'=' -f2)
+    echo WRITE_BW_VAL $WRITE_BW_VAL
     echo
     echo
 
-    if [ "$DBENCH_QUICK" == "" ] || [ "$DBENCH_QUICK" == "no" ]; then
         echo Testing Read Latency...
         READ_LATENCY=$(fio --randrepeat=0 --verify=0 --ioengine=libaio --direct=$FIO_DIRECT --name=read_latency --filename=$DBENCH_MOUNTPOINT/fiotest --bs=4K --iodepth=4 --size=$FIO_SIZE --readwrite=randread --time_based --ramp_time=2s --runtime=15s)
         echo "$READ_LATENCY"
         READ_LATENCY_VAL=$(echo "$READ_LATENCY"|grep ' lat.*avg'|grep -Eoi 'avg=[0-9.]+'|cut -d'=' -f2)
+	echo READ_LATENCY_VAL $READ_LATENCY_VAL
         echo
         echo
 
@@ -63,6 +68,7 @@ if [ "fio" = 'fio' ]; then
         WRITE_LATENCY=$(fio --randrepeat=0 --verify=0 --ioengine=libaio --direct=$FIO_DIRECT --name=write_latency --filename=$DBENCH_MOUNTPOINT/fiotest --bs=4K --iodepth=4 --size=$FIO_SIZE --readwrite=randwrite --time_based --ramp_time=2s --runtime=15s)
         echo "$WRITE_LATENCY"
         WRITE_LATENCY_VAL=$(echo "$WRITE_LATENCY"|grep ' lat.*avg'|grep -Eoi 'avg=[0-9.]+'|cut -d'=' -f2)
+	echo WRITE_LATENCY_VAL $WRITE_LATENCY_VAL
         echo
         echo
 
@@ -70,6 +76,7 @@ if [ "fio" = 'fio' ]; then
         READ_SEQ=$(fio --randrepeat=0 --verify=0 --ioengine=libaio --direct=$FIO_DIRECT --gtod_reduce=1 --name=read_seq --filename=$DBENCH_MOUNTPOINT/fiotest --bs=1M --iodepth=16 --size=$FIO_SIZE --readwrite=read --time_based --ramp_time=2s --runtime=15s --thread --numjobs=4 --offset_increment=$FIO_OFFSET_INCREMENT)
         echo "$READ_SEQ"
         READ_SEQ_VAL=$(echo "$READ_SEQ"|grep -E 'READ:'|grep -Eoi '(aggrb|bw)=[0-9GMKiBs/.]+'|cut -d'=' -f2)
+	echo READ_SEQ_VAL $READ_SEQ_VAL
         echo
         echo
 
@@ -77,6 +84,7 @@ if [ "fio" = 'fio' ]; then
         WRITE_SEQ=$(fio --randrepeat=0 --verify=0 --ioengine=libaio --direct=$FIO_DIRECT --gtod_reduce=1 --name=write_seq --filename=$DBENCH_MOUNTPOINT/fiotest --bs=1M --iodepth=16 --size=$FIO_SIZE --readwrite=write --time_based --ramp_time=2s --runtime=15s --thread --numjobs=4 --offset_increment=$FIO_OFFSET_INCREMENT)
         echo "$WRITE_SEQ"
         WRITE_SEQ_VAL=$(echo "$WRITE_SEQ"|grep -E 'WRITE:'|grep -Eoi '(aggrb|bw)=[0-9GMKiBs/.]+'|cut -d'=' -f2)
+	echo WRITE_SEQ_VAL $WRITE_SEQ_VAL
         echo
         echo
 
@@ -85,9 +93,10 @@ if [ "fio" = 'fio' ]; then
         echo "$RW_MIX"
         RW_MIX_R_IOPS=$(echo "$RW_MIX"|grep -E 'read ?:'|grep -Eoi 'IOPS=[0-9k.]+'|cut -d'=' -f2)
         RW_MIX_W_IOPS=$(echo "$RW_MIX"|grep -E 'write:'|grep -Eoi 'IOPS=[0-9k.]+'|cut -d'=' -f2)
+	echo RW_MIX_R_IOPS $RW_MIX_R_IOPS
+	echo RW_MIX_W_IOPS $RW_MIX_W_IOPS
         echo
         echo
-    fi
 
     echo All tests complete.
     echo
