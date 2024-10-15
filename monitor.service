@@ -1,0 +1,8 @@
+[Unit]
+Description=Monitor
+
+[Service]
+ExecStart=/root/monitor.sh
+
+[Install]
+WantedBy=multi-user.target
