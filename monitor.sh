@@ -11,7 +11,7 @@ do
 	fi
 	MEMORY=$(free -m | awk 'NR==2{printf "%.2f%%\t\t", $3*100/$2 }')
 	DISK=$(df -h | awk '$NF=="/"{printf "%s\t\t", $5}')
-	top -bn1 -c > /var/log/monitor/$DATE/$HOUR
+	top -bn1 -c -w 512 > /var/log/monitor/$DATE/$HOUR
 	CPU=$(cat /var/log/monitor/$DATE/$HOUR | grep load | awk '{printf "%.2f%%\t\t\n", $(NF-2)}')
 	echo "$TS$MEMORY$DISK$CPU" >> /var/log/monitor/general.log
 	# Suppress sub-directory older than 30 days
