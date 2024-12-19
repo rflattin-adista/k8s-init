@@ -1,0 +1,8 @@
+[Unit]
+Description=vmWare Fix
+
+[Service]
+ExecStart=/root/vmware-fix.sh
+
+[Install]
+WantedBy=multi-user.target
